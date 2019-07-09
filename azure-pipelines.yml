@@ -1,13 +1,8 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'PRBANSAL-1'
 
 steps:
 - script: echo Hello, world!
@@ -17,3 +12,30 @@ steps:
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
+
+# Starter pipeline
+- task: Kubernetes@1
+  inputs:
+    connectionType: 'Kubernetes Service Connection'
+    kubernetesServiceEndpoint: 'testUSgov'
+    command: 'create'
+    useConfigurationFile: true
+    configurationType: 'inline'
+    inline: |
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: private-regtest
+      spec:
+        containers:
+        - name: private-reg-container
+          image: test_image
+        imagePullSecrets:
+        - name: mysecret2
+    secretType: 'dockerRegistry'
+    containerRegistryType: 'Azure Container Registry'
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+
